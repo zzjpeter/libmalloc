@@ -31,6 +31,7 @@
 #include <mach-o/dyld.h>
 #include <mach-o/getsect.h>
 #include <string.h>
+int strncmp(const char *, const char *, unsigned long);
 
 // Copied from libmacho/getsecbyname.c, because we do not want to add a
 // dependency on cctools/libmacho (-lmacho).  Only sync with original, never

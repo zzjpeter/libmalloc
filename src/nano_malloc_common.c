@@ -128,7 +128,7 @@ nano_common_init(const char *envp[], const char *apple[], const char *bootargs)
 
 	switch (_malloc_engaged_nano) {
 	case NANO_V2:
-		nanov2_init(envp, apple, bootargs);
+//		nanov2_init(envp, apple, bootargs);
 		break;
 	default:
 		break;
@@ -180,7 +180,7 @@ nano_common_configure(void)
 
 	switch (_malloc_engaged_nano) {
 	case NANO_V2:
-		nanov2_configure();
+//		nanov2_configure();
 		break;
 	default:
 		break;

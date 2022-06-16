@@ -193,13 +193,13 @@ __entropy_from_kernel(const char *str)
 	return idx;
 }
 
-#if TARGET_OS_OSX && defined(__x86_64__)
-static uint64_t
-__is_translated(void)
-{
-	return (*(uint64_t*)_COMM_PAGE_CPU_CAPABILITIES64) & kIsTranslated;
-}
-#endif /* TARGET_OS_OSX */
+//#if TARGET_OS_OSX && defined(__x86_64__)
+//static uint64_t
+//__is_translated(void)
+//{
+//	return (*(uint64_t*)_COMM_PAGE_CPU_CAPABILITIES64) & kIsTranslated;
+//}
+//#endif /* TARGET_OS_OSX */
 
 
 #define LIBMALLOC_EXPERIMENT_FACTORS_KEY "MallocExperiment="
@@ -257,9 +257,9 @@ __malloc_init_from_bootargs(const char *bootargs)
 #if CONFIG_MEDIUM_ALLOCATOR
 #if TARGET_OS_OSX
 #if defined(__x86_64__)
-	if (__is_translated()) {
-		magazine_medium_active_threshold = 0;
-	}
+//	if (__is_translated()) {
+//		magazine_medium_active_threshold = 0;
+//	}
 #elif defined(__arm64__)
 	magazine_medium_active_threshold = 0;
 #endif
@@ -337,9 +337,9 @@ __malloc_init(const char *apple[])
 	// into.
 	char bootargs[1024] = { '\0' };
 	bool allow_bootargs = true;
-#if CONFIG_FEATUREFLAGS_SIMPLE
-	allow_bootargs &= os_feature_enabled_simple(libmalloc, EnableBootArgs, false);
-#endif
+//#if CONFIG_FEATUREFLAGS_SIMPLE
+//	allow_bootargs &= os_feature_enabled_simple(libmalloc, EnableBootArgs, false);
+//#endif
 #if defined(_COMM_PAGE_DEV_FIRM)
 	allow_bootargs &= !!*((uint32_t *)_COMM_PAGE_DEV_FIRM);
 #endif // _COMM_PAGE_DEV_FIRM
@@ -954,7 +954,7 @@ _malloc_initialize(const char *apple[], const char *bootargs)
 	malloc_zone_t *helper_zone = initial_scalable_zone;
 
 	if (_malloc_engaged_nano == NANO_V2) {
-		initial_nano_zone = nanov2_create_zone(helper_zone, malloc_debug_flags);
+		//initial_nano_zone = nanov2_create_zone(helper_zone, malloc_debug_flags);
 	}
 
 	if (initial_nano_zone) {
@@ -2557,7 +2557,7 @@ _malloc_fork_child(void)
 #if CONFIG_NANOZONE
 	if (_malloc_entropy_initialized) {
 		if (_malloc_engaged_nano == NANO_V2) {
-			nanov2_forked_zone((nanozonev2_t *)initial_nano_zone);
+			//nanov2_forked_zone((nanozonev2_t *)initial_nano_zone);
 		}
 	}
 #endif

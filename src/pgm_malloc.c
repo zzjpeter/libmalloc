@@ -1128,22 +1128,22 @@ pgm_should_enable(bool internal_build)
 	if (env_var("MallocProbGuard")) {
 		return env_bool("MallocProbGuard");
 	}
-	if (FEATURE_FLAG(ProbGuard, true) && should_activate(internal_build)) {
-#if TARGET_OS_OSX || TARGET_OS_IOS
-		return true;
-#elif TARGET_OS_TV
-		if (internal_build) {
-			return true;
-		}
-#elif TARGET_OS_WATCH
-		if (internal_build && is_high_memory_device()) {
-			return true;
-		}
-#endif
-	}
-	if (FEATURE_FLAG(ProbGuardAllProcesses, false)) {
-		return true;
-	}
+//	if (FEATURE_FLAG(ProbGuard, true) && should_activate(internal_build)) {
+//#if TARGET_OS_OSX || TARGET_OS_IOS
+//		return true;
+//#elif TARGET_OS_TV
+//		if (internal_build) {
+//			return true;
+//		}
+//#elif TARGET_OS_WATCH
+//		if (internal_build && is_high_memory_device()) {
+//			return true;
+//		}
+//#endif
+//	}
+//	if (FEATURE_FLAG(ProbGuardAllProcesses, false)) {
+//		return true;
+//	}
 	return false;
 }
 
@@ -1197,7 +1197,7 @@ configure_zone(pgm_zone_t *zone)
 	uint32_t sample_rate = env_uint("MallocProbGuardSampleRate", choose_sample_rate());
 	// Approximate a (1 / sample_rate) chance for sampling; 1 means "always sample".
 	zone->sample_counter_range = (sample_rate != 1) ? (2 * sample_rate) : 1;
-	bool strict_alignment = env_var("MallocProbGuardStrictAlignment") ? env_bool("MallocProbGuardStrictAlignment") : FEATURE_FLAG(ProbGuardStrictAlignment, false);
+    bool strict_alignment = env_var("MallocProbGuardStrictAlignment") ? env_bool("MallocProbGuardStrictAlignment") : false; //FEATURE_FLAG(ProbGuardStrictAlignment, false);
 	zone->min_alignment = strict_alignment ? 1 : 16;  // Darwin ABI requires 16 byte alignment.
 	zone->signal_handler = env_bool("MallocProbGuardSignalHandler");
 	zone->debug = env_bool("MallocProbGuardDebug");

@@ -1666,11 +1666,11 @@ create_scalable_szone(size_t initial_size, unsigned debug_flags)
 {
 	szone_t *szone;
 
-#if defined(__i386__) || defined(__x86_64__)
-	if (_COMM_PAGE_VERSION_REQD > (*((uint16_t *)_COMM_PAGE_VERSION))) {
-		MALLOC_REPORT_FATAL_ERROR((*((uint16_t *)_COMM_PAGE_VERSION)), "comm page version mismatch");
-	}
-#endif
+//#if defined(__i386__) || defined(__x86_64__)
+//	if (_COMM_PAGE_VERSION_REQD > (*((uint16_t *)_COMM_PAGE_VERSION))) {
+//		MALLOC_REPORT_FATAL_ERROR((*((uint16_t *)_COMM_PAGE_VERSION)), "comm page version mismatch");
+//	}
+//#endif
 
 	/* get memory for the zone. */
 	szone = mvm_allocate_pages(SZONE_PAGED_SIZE, 0, DISABLE_ASLR, VM_MEMORY_MALLOC);
