@@ -69,6 +69,8 @@ unsigned malloc_check_each = 1000;
 static int malloc_check_sleep = 100; // default 100 second sleep
 static int malloc_check_abort = 0;   // default is to sleep, not abort
 
+static os_once_t _malloc_initialize_pred;
+
 static struct _malloc_msl_symbols msl = {};
 
 // TODO delete this, its only used some deprecated functions like turn_on_stack_logging,
@@ -932,17 +934,17 @@ _malloc_initialize(const char *apple[], const char *bootargs)
 #if CONFIG_QUARANTINE
 	malloc_quarantine_enabled = quarantine_should_enable();
 #endif
-	
-#if CONFIG_NANOZONE
-	// TODO: envp should be passed down from Libsystem
-	const char **envp = (const char **)*_NSGetEnviron();
-	
-	// Force magazine_malloc then quarantine is enabled, to avoid speculative
-	// out-of-bounds use-after-free reads that nano/nanov2 performs.
-	if (!malloc_quarantine_enabled) {
-		nano_common_init(envp, apple, bootargs);
-	}
-#endif // CONFIG_NANOZONE
+// peterzjzhu - 和谐学习 不急不躁 修改 - Libsystem 环境变量处理
+//#if CONFIG_NANOZONE
+//	// TODO: envp should be passed down from Libsystem
+//	const char **envp = (const char **)*_NSGetEnviron();
+//	
+//	// Force magazine_malloc then quarantine is enabled, to avoid speculative
+//	// out-of-bounds use-after-free reads that nano/nanov2 performs.
+//	if (!malloc_quarantine_enabled) {
+//		nano_common_init(envp, apple, bootargs);
+//	}
+//#endif // CONFIG_NANOZONE
 
 	initial_scalable_zone = create_scalable_zone(0, malloc_debug_flags);
 	malloc_set_zone_name(initial_scalable_zone, DEFAULT_MALLOC_ZONE_STRING);
@@ -1013,10 +1015,19 @@ register_pgm_zone(bool internal_diagnostics)
 	}
 }
 
+// peterzjzhu 和谐学习 不急不躁 这里增设_malloc_initialize_once
+// 便于 inline_malloc_default_zone 的处理数据
+MALLOC_ALWAYS_INLINE
+static inline void
+_malloc_initialize_once(void)
+{
+	os_once(&_malloc_initialize_pred, NULL, _malloc_initialize);
+}
 static inline malloc_zone_t *
 inline_malloc_default_zone(void)
 {
-	// malloc_report(ASL_LEVEL_INFO, "In inline_malloc_default_zone with %d %d\n", malloc_num_zones, malloc_has_debug_zone);
+	_malloc_initialize_once();
+//	malloc_report(ASL_LEVEL_INFO, "In inline_malloc_default_zone with %d %d\n", malloc_num_zones, malloc_has_debug_zone);
 	return malloc_zones[0];
 }
 
@@ -1588,6 +1599,7 @@ malloc_set_errno_fast(malloc_zone_options_t mzo, int err)
 	}
 }
 
+// peterzjzhu - 和谐学习 不急不躁 修改 - _malloc_zone_malloc
 MALLOC_NOINLINE
 static void *
 _malloc_zone_malloc(malloc_zone_t *zone, size_t size, malloc_zone_options_t mzo)
@@ -1634,7 +1646,7 @@ _malloc_zone_calloc(malloc_zone_t *zone, size_t num_items, size_t size,
 	if (malloc_check_start) {
 		internal_check();
 	}
-
+	// peterzjzhu 和谐学习不急不躁 这个流程是有优化的 会和苹果原系统不一定完全重合
 	ptr = zone->calloc(zone, num_items, size);
 
 	if (os_unlikely(malloc_logger)) {

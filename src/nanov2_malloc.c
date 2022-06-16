@@ -2724,7 +2724,7 @@ again:
 
 #pragma mark -
 #pragma mark Zone Operations
-
+// peterzjzhu 和谐学习不急不躁 nanov2 直接优化了
 malloc_zone_t *
 nanov2_create_zone(malloc_zone_t *helper_zone, unsigned debug_flags)
 {
